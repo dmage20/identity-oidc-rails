@@ -16,9 +16,9 @@ RSpec.describe "Attempts API", type: :request do
         "https://schemas.login.gov/secevent/attempts/event-type/login-success" => {
           "success" => true,
           "occurred_at" => 1_700_000_000,
-          "pii_thing" => "secret value",
-        },
-      },
+          "pii_thing" => "secret value"
+        }
+      }
     }
   end
 

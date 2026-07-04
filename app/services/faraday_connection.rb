@@ -8,6 +8,7 @@ class FaradayConnection
 
   def self.build(url:, params: nil, headers: nil)
     Faraday.new(url: url, params: params, headers: headers, ssl: { verify: true }) do |f|
+      f.request :url_encoded
       f.options.open_timeout = OPEN_TIMEOUT
       f.options.timeout = TIMEOUT
     end

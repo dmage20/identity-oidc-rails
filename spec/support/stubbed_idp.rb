@@ -24,13 +24,13 @@ RSpec.shared_context "stubbed IdP" do
         token_endpoint: token_endpoint,
         userinfo_endpoint: userinfo_endpoint,
         end_session_endpoint: end_session_endpoint,
-        jwks_uri: jwks_endpoint,
+        jwks_uri: jwks_endpoint
       }.to_json)
 
     stub_request(:get, jwks_endpoint).
       to_return(body: { keys: [ {
         alg: "RS256",
-        use: "sig" }.merge(JWT::JWK.new(OpenSSL::PKey::RSA.new(read_fixture_file("idp.key.pub"))).export) ],
+        use: "sig" }.merge(JWT::JWK.new(OpenSSL::PKey::RSA.new(read_fixture_file("idp.key.pub"))).export) ]
       }.to_json)
   end
 
@@ -43,7 +43,7 @@ RSpec.shared_context "stubbed IdP" do
     stub_request(:post, token_endpoint).
       to_return(body: {
         id_token: id_token,
-        access_token: access_token,
+        access_token: access_token
       }.to_json)
   end
 

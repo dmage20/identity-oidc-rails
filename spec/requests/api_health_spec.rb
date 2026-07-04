@@ -13,7 +13,7 @@ RSpec.describe "GET /api/health", type: :request do
     body = JSON.parse(response.body)
     expect(body["authorization_endpoint"]).to eq(authorization_endpoint)
     expect(body["private_key_fingerprint"]).to match(/\A\h{40}\z/)
-    expect(body["healthy"]).to eq(true)
+    expect(body["healthy"]).to be(true)
   end
 
   it "returns unhealthy with a 500 when the IdP is unreachable" do
@@ -24,7 +24,7 @@ RSpec.describe "GET /api/health", type: :request do
 
     expect(response).to have_http_status(:internal_server_error)
     body = JSON.parse(response.body)
-    expect(body["healthy"]).to eq(false)
+    expect(body["healthy"]).to be(false)
     expect(body["error"]).to be_present
   end
 

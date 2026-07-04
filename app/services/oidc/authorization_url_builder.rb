@@ -20,7 +20,7 @@ module Oidc
         state: state,
         nonce: nonce,
         attempts_api_session_id: SecureRandom.uuid,
-        prompt: prompt,
+        prompt: prompt
       }
 
       if code_verifier

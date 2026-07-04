@@ -13,7 +13,7 @@ module Oidc
       request_params = {
         client_id: client_id,
         post_logout_redirect_uri: File.join(@config.redirect_uri, "logout"),
-        state: SecureRandom.hex,
+        state: SecureRandom.hex
       }.to_query
 
       "#{endpoint}?#{request_params}"

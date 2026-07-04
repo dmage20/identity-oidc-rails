@@ -15,7 +15,7 @@ module Oidc
     def exchange(code:, client_id:, code_verifier: nil)
       token_params = {
         grant_type: "authorization_code",
-        code: code,
+        code: code
       }
 
       if @config.pkce?
@@ -44,7 +44,7 @@ module Oidc
         sub: client_id,
         aud: token_endpoint,
         jti: SecureRandom.hex,
-        exp: Time.now.to_i + 1000,
+        exp: Time.now.to_i + 1000
       }
 
       JWT.encode(jwt_payload, @config.sp_private_key, "RS256")

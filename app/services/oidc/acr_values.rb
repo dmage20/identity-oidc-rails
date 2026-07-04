@@ -11,7 +11,7 @@ module Oidc
       nil => "http://idmanagement.gov/ns/assurance/ial/1",
       "2" => "http://idmanagement.gov/ns/assurance/ial/2",
       "facial-match-preferred" => "http://idmanagement.gov/ns/assurance/ial/2?bio=preferred",
-      "facial-match-required" => "http://idmanagement.gov/ns/assurance/ial/2?bio=required",
+      "facial-match-required" => "http://idmanagement.gov/ns/assurance/ial/2?bio=required"
     }.freeze
 
     SEMANTIC_IAL_VALUES = {
@@ -20,19 +20,19 @@ module Oidc
       nil => "urn:acr.login.gov:auth-only",
       "2" => "urn:acr.login.gov:verified",
       "facial-match-required" => "urn:acr.login.gov:verified-facial-match-required",
-      "facial-match-preferred" => "urn:acr.login.gov:verified-facial-match-preferred",
+      "facial-match-preferred" => "urn:acr.login.gov:verified-facial-match-preferred"
     }.freeze
 
     AAL_VALUES = {
       "2" => "http://idmanagement.gov/ns/assurance/aal/2",
       "2-phishing_resistant" => "http://idmanagement.gov/ns/assurance/aal/2?phishing_resistant=true",
-      "2-hspd12" => "http://idmanagement.gov/ns/assurance/aal/2?hspd12=true",
+      "2-hspd12" => "http://idmanagement.gov/ns/assurance/aal/2?hspd12=true"
     }.freeze
 
     def self.build(ial:, aal:, config: AppConfig.instance)
       ial_values = config.semantic_ial_values_enabled? ? SEMANTIC_IAL_VALUES : LEGACY_IAL_VALUES
 
-      [ial_values[ial], AAL_VALUES[aal]].compact.join(" ")
+      [ ial_values[ial], AAL_VALUES[aal] ].compact.join(" ")
     end
   end
 end

@@ -1,8 +1,32 @@
 # Omakase Ruby styling for Rails
 inherit_gem: { rubocop-rails-omakase: rubocop.yml }
 
-# Overwrite or add rules to create your own house style
-#
-# # Use `[a, [b, c]]` not `[ a, [ b, c ] ]`
-# Layout/SpaceInsideArrayLiteralBrackets:
-#   Enabled: false
+plugins:
+  - rubocop-rspec
+
+AllCops:
+  Exclude:
+    - "bin/**/*"
+    - "node_modules/**/*"
+    - "public/**/*"
+    - "vendor/**/*"
+
+RSpec:
+  Enabled: true
+
+# Request specs porting the sinatra suite are scenario-shaped; keep the
+# translations close to the originals.
+RSpec/ExampleLength:
+  Enabled: false
+RSpec/MultipleExpectations:
+  Enabled: false
+RSpec/AnyInstance:
+  Enabled: false
+RSpec/DescribeClass:
+  Enabled: false
+RSpec/MultipleMemoizedHelpers:
+  Enabled: false
+# "stubbed IdP" names a fixture, not a behavioral context.
+RSpec/ContextWording:
+  Exclude:
+    - "spec/support/**/*"

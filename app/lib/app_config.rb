@@ -100,7 +100,7 @@ class AppConfig
       "eipp_allowed" => ENV.fetch("eipp_allowed", "false") == "true",
       "attempts_shared_secret" => ENV["attempts_shared_secret"],
       "allow_all_events_plaintext" => ENV["allow_all_events_plaintext"],
-      "signed_events" => ENV["signed_events"],
+      "signed_events" => ENV["signed_events"]
     }
 
     env = ENV["idp_environment"] || "int"

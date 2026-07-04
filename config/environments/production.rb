@@ -29,7 +29,7 @@ Rails.application.configure do
 
   # Skip http-to-https redirect for health check endpoints (cloud.gov probes over HTTP).
   config.ssl_options = {
-    redirect: { exclude: ->(request) { ["/up", "/api/health"].include?(request.path) } }
+    redirect: { exclude: ->(request) { [ "/up", "/api/health" ].include?(request.path) } }
   }
 
   # Log to STDOUT with the current request id as a default log tag.

@@ -16,10 +16,10 @@ RSpec.describe AttemptsApi::Redactor do
         "nested" => {
           "first_name" => "more pii",
           "success" => {
-            "more_pii" => "recursive pii",
-          },
-        },
-      },
+            "more_pii" => "recursive pii"
+          }
+        }
+      }
     ]
   end
 
@@ -42,8 +42,8 @@ RSpec.describe AttemptsApi::Redactor do
           "pii_event" => "REDACTED",
           "nested" => {
             "first_name" => "REDACTED",
-            "success" => { "more_pii" => "REDACTED" },
-          },
+            "success" => { "more_pii" => "REDACTED" }
+          }
         },
       )
 

@@ -46,7 +46,7 @@ module Oidc
       defaults = {
         nil => %w[openid email x509],
         "0" => %w[openid email social_security_number x509],
-        "1" => %w[openid email x509],
+        "1" => %w[openid email x509]
       }
 
       IAL2_OPTIONS.each { |ial| defaults[ial] = IAL2_DEFAULT_SCOPES }

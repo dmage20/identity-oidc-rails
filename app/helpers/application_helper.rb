@@ -8,12 +8,12 @@ module ApplicationHelper
       [ "0", "IALMax" ],
       [ "step-up", "Step-up Flow" ],
       [ "facial-match-preferred", "Facial Match Preferred (ACR)" ],
-      [ "facial-match-required", "Facial Match Required (ACR)" ],
+      [ "facial-match-required", "Facial Match Required (ACR)" ]
     ]
 
     if AppConfig.instance.eipp_allowed?
       options << [
-        "enhanced-ipp-required", "Enhanced In-Person Proofing (Enabled in dev & staging only)",
+        "enhanced-ipp-required", "Enhanced In-Person Proofing (Enabled in dev & staging only)"
       ]
     end
 
