@@ -1,0 +1,131 @@
+# Jobs defined here use the idp/ci docker image from ECR by default.
+# Images are built via the identity-devops GitLab pipeline.
+
+variables:
+  BUNDLER_VERSION: "2.6.9"
+  ECR_REGISTRY: '${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com'
+  OIDC_RAILS_CI_SHA: 'latest'
+
+default:
+  image: '${ECR_REGISTRY}/oidc_rails/ci:${OIDC_RAILS_CI_SHA}'
+
+
+.bundle_install: &bundle_install
+  - gem install bundler --version $BUNDLER_VERSION
+  - bundle check || bundle install --deployment --jobs=4 --retry=3 --without deploy doc --path vendor/bundle
+
+.npm_install: &npm_install
+  - npm ci --cache=.npm-cache
+
+.deploy_script: &deploy_script
+  - *bundle_install
+  - *npm_install
+  - bundle exec rake login:deploy_json
+  - make copy_vendor
+  - RAILS_ENV=production SECRET_KEY_BASE_DUMMY=1 bundle exec rails assets:precompile
+  - cf8 login -a https://api.fr.cloud.gov -u "e1fdd211-f191-40e8-99c7-4e7164d9ae76" -p $CF8_PASS -o "gsa-login-prototyping" -s "$SPACE"
+  - cf8 push $SPACE-identity-oidc-rails -b ruby_buildpack -s cflinuxfs4 --var rails_env=production
+
+.build_cache:
+  - &ruby_cache
+    key:
+      files:
+        - Gemfile.lock
+    paths:
+      - vendor/bundle
+    policy: pull
+
+  - &npm_cache
+    key:
+      files:
+        - package-lock.json
+    paths:
+      - .npm-cache/
+    policy: pull
+
+stages:
+  - .pre
+  - test
+  - deploy
+
+workflow:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" || $CI_PIPELINE_SOURCE == "web"'
+    - if: '$CI_COMMIT_BRANCH == "main"'
+    - if: $CI_COMMIT_TAG
+      when: never
+
+install_dependencies:
+  stage: .pre
+  variables:
+    RAILS_ENV: test
+  cache:
+    - <<: *ruby_cache
+      policy: pull-push
+    - <<: *npm_cache
+      policy: pull-push
+  script:
+    - *bundle_install
+    - *npm_install
+    - bundle exec rake login:deploy_json
+
+test_release:
+  stage: test
+  variables:
+    RAILS_ENV: test
+  needs:
+    - job: install_dependencies
+  cache:
+    - <<: *ruby_cache
+    - <<: *npm_cache
+  script:
+    - *bundle_install
+    - *npm_install
+    - make .env
+    - make copy_vendor
+    - make check
+  artifacts:
+    paths:
+      - /tmp/test-results
+
+build-ci-image:
+  stage: .pre
+  interruptible: true
+  needs: []
+  tags:
+    - build-pool
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: ['']
+  rules:
+    # Build when there are changes to the Dockerfile
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_PIPELINE_SOURCE == "merge_request_event" || $CI_PIPELINE_SOURCE == "web"'
+      changes:
+        compare_to: 'refs/heads/main'
+        paths:
+          - dockerfiles/ci.Dockerfile
+  script:
+    - mkdir -p /kaniko/.docker
+    - |-
+      KANIKOCFG="\"credsStore\":\"ecr-login\""
+      if [ "x${http_proxy}" != "x" -o "x${https_proxy}" != "x" ]; then
+        KANIKOCFG="${KANIKOCFG}, \"proxies\": { \"default\": { \"httpProxy\": \"${http_proxy}\", \"httpsProxy\": \"${https_proxy}\", \"noProxy\": \"${no_proxy}\"}}"
+      fi
+      KANIKOCFG="{ ${KANIKOCFG} }"
+      echo "${KANIKOCFG}" > /kaniko/.docker/config.json
+    - >-
+      /kaniko/executor
+      --context "${CI_PROJECT_DIR}"
+      --dockerfile "${CI_PROJECT_DIR}/dockerfiles/ci.Dockerfile"
+      --destination "${ECR_REGISTRY}/oidc_rails/ci:latest"
+      --destination "${ECR_REGISTRY}/oidc_rails/ci:${CI_COMMIT_SHA}"
+      --build-arg "http_proxy=${http_proxy}" --build-arg "https_proxy=${https_proxy}" --build-arg "no_proxy=${no_proxy}"
+
+deploy_to_cloudgov:
+  stage: deploy
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+  script: *deploy_script
+  parallel:
+    matrix:
+      - SPACE: [prod, staging, int, dev, dm]

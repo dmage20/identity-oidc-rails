@@ -32,3 +32,8 @@
 /node_modules
 /public/vendor
 
+# Generated at deploy time by rake login:deploy_json
+/public/api/deploy.json
+
+/coverage
+
