@@ -1,0 +1,82 @@
+<%= render "shared/banner" %>
+<%= render "shared/header",
+  logout_msg: @logout_msg,
+  login_msg: @login_msg,
+  user_email: @user_email,
+  access_denied: @access_denied,
+  aal: @aal,
+  ial: @ial %>
+<main id="main-content">
+  <section class="usa-hero">
+    <div class="grid-container">
+      <div class="usa-hero__callout">
+        <% if @user_email %>
+          <h1 class="usa-hero__heading">
+            <span class="usa-hero__heading--alt">Welcome Back!</span>
+            You are logged in
+          </h1>
+          <p>When finished, use the previous 'Log out' button to sign out.</p>
+        <% else %>
+          <h1 class="usa-hero__heading">
+            <span class="usa-hero__heading--alt">Let's get started!</span>
+            It's easy to make an account
+          </h1>
+          <p>Setting it up takes just a few, short steps.</p>
+        <% end %>
+      </div>
+    </div>
+    <% if @userinfo %>
+      <div class="userinfo">
+        <div class="padding-2 clearfix bg-white fg-black">
+          Received user info:<br>
+          <div>
+            <ul>
+              <% @userinfo.each_pair do |key, val| %>
+                <% val = maybe_redact_ssn(val) if key.to_s == 'social_security_number' %>
+                <li>
+                  <pre><%= key.inspect %>: <%= val.inspect %></pre>
+                </li>
+              <% end %>
+            </ul>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </section>
+  <section class="grid-container usa-section">
+    <div class="grid-row grid-gap">
+      <div class="tablet:grid-col-4">
+        <h2 class="font-heading-xl margin-top-0 tablet:margin-bottom-0">We are with you every step of the way</h2>
+      </div>
+      <div class="tablet:grid-col-8 usa-prose">
+        <p>We hope your visit will help you understand the opportunities and potential rewards that are available to you. We created this website to help you gain a better understanding of these concepts. Most importantly, we hope you see the value of working with us to pursue your goals. We're here to help educate you about the basic concepts, to help you learn more about who we are, and to give you fast, easy access to opportunities.</p>
+      </div>
+    </div>
+  </section>
+  <section class="usa-graphic-list usa-section usa-section--dark">
+    <div class="grid-container">
+      <div class="usa-graphic-list__row grid-row grid-gap">
+        <div class="usa-media-block tablet:grid-col">
+          <div class="usa-media-block__body">
+            <h3 class="usa-graphic-list__heading">Create a plan for success</h3>
+            <p>We offer educational articles that outline key concepts and highlight services designed to fill the gaps in your planning.</p>
+          </div>
+        </div>
+        <div class="usa-media-block tablet:grid-col">
+          <div class="usa-media-block__body">
+            <h3 class="usa-graphic-list__heading">Evaluate your current and future needs</h3>
+            <p>On our website, you'll find valuable information for evaluating your current situation and progress toward your goals.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="usa-section">
+    <div class="grid-container">
+      <h2 class="font-heading-xl margin-y-0">Come back often</h2>
+      <p class="usa-intro">We hope you take advantage of this resource and visit us often. Be sure to add our site to your list of "favorites" in your Internet browser. We frequently update our information, and we wouldn't want you to miss any developments.</p>
+      <a class="usa-button usa-button--big" href="#">New developments</a>
+    </div>
+  </section>
+</main>
+<%= render "shared/footer" %>
