@@ -16,7 +16,6 @@ RSpec.shared_context "stubbed IdP" do
   before do
     ENV["semantic_ial_values_enabled"] = "false"
     ENV["PKCE"] = "false"
-    allow(AppConfig).to receive(:instance).and_return(AppConfig.new)
     allow_any_instance_of(AppConfig).to receive(:cache_oidc_config?).and_return(false)
 
     stub_request(:get, "#{host}/.well-known/openid-configuration").
