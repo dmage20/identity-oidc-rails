@@ -1,0 +1,32 @@
+<%= render "shared/banner" %>
+<div class="grid-container padding-0">
+  <h1> Attempt events </h1>
+  <%= form_with url: "/ack-events", method: :post, local: true do %>
+    <input type="hidden" name="jtis" value="<%= @attempts_events.map { |event| event['jti'] }.join(',') %>">
+    <button type="submit" class="usa-button usa-button--secondary">
+      <svg class="usa-icon" aria-hidden="true" focusable="false" role="img">
+        <use xlink:href="/vendor/uswds/img/sprite.svg#delete"></use>
+      </svg>
+      Delete all events
+    </button>
+  <% end %>
+  <div class="grid-row">
+    <table class="usa-table usa-table--striped grid-col-fill">
+      <thead>
+        <tr>
+          <th scope="col">Type</th>
+          <th scope="col">JTI</th>
+          <th scope="col">Issued At</th>
+          <th scope="col">Event data</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @attempts_events.sort_by { |e| e['iat'] }.each do |attempt_event| %>
+          <%= render "attempts/event",
+            event_data: attempt_event['events'],
+            jwe_data: attempt_event.except('events') %>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

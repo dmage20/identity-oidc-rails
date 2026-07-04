@@ -1,0 +1,23 @@
+<tr>
+  <td>
+    <%= event_data.keys.first.split('/').last %>
+  </td>
+  <td>
+    <%= jwe_data['jti'] %>
+    <%= form_with url: "/ack-events", method: :post, local: true do %>
+      <input type="hidden" name="jtis" value="<%= jwe_data['jti'] %>">
+      <button type="submit" class="usa-button usa-button--secondary">
+        <svg class="usa-icon" aria-hidden="true" focusable="false" role="img">
+          <use xlink:href="/vendor/uswds/img/sprite.svg#delete"></use>
+        </svg>
+        Delete Event
+      </button>
+    <% end %>
+  </td>
+  <td>
+    <%= Time.at(jwe_data['iat']) %>
+  </td>
+  <td style="max-width: 400px;overflow-wrap: anywhere;">
+    <%= JSON.pretty_generate(event_data(event_data.values)) %>
+  </td>
+</tr>
