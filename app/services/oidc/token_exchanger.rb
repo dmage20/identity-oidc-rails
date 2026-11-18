@@ -12,7 +12,7 @@ module Oidc
     end
 
     # @return [HashWithIndifferentAccess] the token endpoint response
-    def exchange(code:, client_id:, code_verifier: nil)
+    def exchange(code:, client_id:, code_verifier: nil, dpop_proof: nil)
       token_params = {
         grant_type: "authorization_code",
         code: code
@@ -25,7 +25,8 @@ module Oidc
         token_params[:client_assertion] = client_assertion_jwt(client_id)
       end
 
-      response = FaradayConnection.post(token_endpoint, token_params)
+      headers = dpop_proof.present? ? { "DPoP" => dpop_proof } : {}
+      response = FaradayConnection.build(url: token_endpoint, headers: headers).post(nil, token_params)
       FaradayConnection.log_failure(response, token_endpoint)
       raise AppError.new(response.body) if response.status != 200
 

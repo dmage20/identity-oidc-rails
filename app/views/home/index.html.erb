@@ -6,7 +6,145 @@
   access_denied: @access_denied,
   aal: @aal,
   ial: @ial %>
+
+<script type="application/json" id="america-gov-config">
+  <%= @america_gov_config.to_json.html_safe %>
+</script>
+
 <main id="main-content">
+  <% if @pending_dpop_code || @user_sub %>
+    <section class="usa-section agov-portal">
+      <div class="grid-container">
+        <div class="margin-bottom-3">
+          <span class="usa-tag bg-primary-dark">America.gov Mock Portal</span>
+          <h1 class="font-heading-xl margin-top-1 margin-bottom-1">
+            Encrypted Benefits &amp; Fraud Support Workspace
+          </h1>
+          <p class="usa-intro margin-top-0 margin-bottom-2">
+            Messages, client-side widgets, and case tickets below are encrypted and decrypted exclusively in your browser using your Login.gov Site Key.
+          </p>
+        </div>
+
+        <div id="agov-status-banner" class="usa-alert usa-alert--info margin-bottom-2">
+          <div class="usa-alert__body">
+            <p id="agov-status-text" class="usa-alert__text">Initializing WebCrypto workspace...</p>
+          </div>
+        </div>
+
+        <% if @user_sub %>
+          <div class="grid-row grid-gap">
+            <!-- Left Column: User-Visible Plaintext in Browser -->
+            <div class="tablet:grid-col-7">
+              <div class="usa-card margin-bottom-3">
+                <div class="usa-card__container">
+                  <div class="usa-card__header">
+                    <h2 class="usa-card__heading">Encrypted Chat History (Decrypted Locally)</h2>
+                  </div>
+                  <div class="usa-card__body">
+                    <div id="agov-chat-log" class="agov-chat-log margin-bottom-2">
+                      Loading encrypted conversations...
+                    </div>
+
+                    <form id="agov-chat-form" class="usa-form maxw-none">
+                      <label class="usa-label margin-top-0" for="agov-chat-input">
+                        Send a message (encrypted in browser before POST)
+                      </label>
+                      <div class="display-flex flex-align-end grid-gap-1">
+                        <input id="agov-chat-input" type="text" class="usa-input flex-1 margin-top-0"
+                               placeholder="Ask about SSA benefits or report suspicious activity..." required>
+                        <button type="submit" class="usa-button margin-top-0">Encrypt &amp; Send</button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+
+              <div class="usa-card">
+                <div class="usa-card__container">
+                  <div class="usa-card__header">
+                    <h2 class="usa-card__heading">Client-Side Only Interaction Widget</h2>
+                  </div>
+                  <div class="usa-card__body">
+                    <p class="font-sans-xs text-base margin-top-0">
+                      Simulates browser-only UI widgets or 3rd-party API responses that never pass through America.gov’s server in plaintext.
+                    </p>
+                    <form id="agov-widget-form" class="usa-form maxw-none">
+                      <div class="grid-row grid-gap">
+                        <div class="tablet:grid-col-7">
+                          <label class="usa-label margin-top-0" for="agov-widget-category">Interaction Type</label>
+                          <select id="agov-widget-category" class="usa-select">
+                            <option value="Fraud Report Intake">Fraud Report Intake</option>
+                            <option value="SSA Benefit Estimate">SSA Benefit Estimate</option>
+                            <option value="3rd-Party API Summary">3rd-Party API Case Summary</option>
+                          </select>
+                        </div>
+                        <div class="tablet:grid-col-5">
+                          <label class="usa-label margin-top-0" for="agov-widget-amount">Est. Amount ($)</label>
+                          <input id="agov-widget-amount" type="number" class="usa-input" value="1850">
+                        </div>
+                      </div>
+                      <label class="usa-label" for="agov-widget-details">Sensitive Details (Browser-Only)</label>
+                      <textarea id="agov-widget-details" class="usa-textarea" rows="2"
+                                placeholder="e.g., Claim #4821 — unauthorized deposit inquiry..." required></textarea>
+                      <div class="margin-top-2 display-flex flex-wrap grid-gap-1">
+                        <button type="submit" class="usa-button">Save Encrypted Widget Ticket</button>
+                        <button type="button" id="agov-server-seal-btn" class="usa-button usa-button--outline">
+                          Simulate Offline Server-Sealed Ticket
+                        </button>
+                        <button type="button" id="agov-clear-btn" class="usa-button usa-button--secondary">
+                          Clear Stored History
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Column: Zero-Knowledge Proof & Server Storage Inspector -->
+            <div class="tablet:grid-col-5">
+              <div class="usa-card margin-bottom-3">
+                <div class="usa-card__container">
+                  <div class="usa-card__header">
+                    <h2 class="usa-card__heading">Key Custody Telemetry</h2>
+                  </div>
+                  <div class="usa-card__body font-sans-xs">
+                    <div class="margin-bottom-105">
+                      <strong>Browser State:</strong>
+                      <div id="agov-key-state" class="text-green text-bold">—</div>
+                    </div>
+                    <div class="margin-bottom-105">
+                      <strong>DPoP Key Thumbprint (<code>dpop_jkt</code>):</strong>
+                      <div id="agov-dpop-jkt" class="agov-mono">—</div>
+                    </div>
+                    <div>
+                      <strong>Site Key Public JWK (<code>site_key_public</code>):</strong>
+                      <div id="agov-site-key-pub" class="agov-mono">—</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="usa-card">
+                <div class="usa-card__container">
+                  <div class="usa-card__header">
+                    <h2 class="usa-card__heading">What America.gov’s Server Sees (JSON Store)</h2>
+                  </div>
+                  <div class="usa-card__body">
+                    <p class="font-sans-xs text-base margin-top-0">
+                      Live contents of <code>tmp/america_gov_conversations.json</code> for your <code>sub</code>. Zero plaintext exists on disk.
+                    </p>
+                    <pre id="agov-raw-json" class="agov-cipher-pre">[]</pre>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </section>
+  <% end %>
+
   <section class="usa-hero">
     <div class="grid-container">
       <div class="usa-hero__callout">
@@ -15,13 +153,13 @@
             <span class="usa-hero__heading--alt">Welcome Back!</span>
             You are logged in
           </h1>
-          <p>When finished, use the previous 'Log out' button to sign out.</p>
+          <p>Open a second Incognito browser window and sign in to test cross-device decryption under a fresh DPoP key.</p>
         <% else %>
           <h1 class="usa-hero__heading">
-            <span class="usa-hero__heading--alt">Let's get started!</span>
-            It's easy to make an account
+            <span class="usa-hero__heading--alt">America.gov + Login.gov</span>
+            Zero-Knowledge Site Key Demo
           </h1>
-          <p>Setting it up takes just a few, short steps.</p>
+          <p>Click <strong>Sign in</strong> above with <code>site_key</code> checked (default for IAL1) to test end-to-end key custody, recovery codes, and browser-side encryption.</p>
         <% end %>
       </div>
     </div>
@@ -43,39 +181,17 @@
       </div>
     <% end %>
   </section>
+
   <section class="grid-container usa-section">
     <div class="grid-row grid-gap">
       <div class="tablet:grid-col-4">
-        <h2 class="font-heading-xl margin-top-0 tablet:margin-bottom-0">We are with you every step of the way</h2>
+        <h2 class="font-heading-xl margin-top-0 tablet:margin-bottom-0">How this mock tests your 4-PR stack</h2>
       </div>
       <div class="tablet:grid-col-8 usa-prose">
-        <p>We hope your visit will help you understand the opportunities and potential rewards that are available to you. We created this website to help you gain a better understanding of these concepts. Most importantly, we hope you see the value of working with us to pursue your goals. We're here to help educate you about the basic concepts, to help you learn more about who we are, and to give you fast, easy access to opportunities.</p>
+        <p>
+          When you click <strong>Sign in</strong>, your browser generates an ephemeral P-256 DPoP keypair in <code>sessionStorage</code>, sends its thumbprint (<code>dpop_jkt</code>) to Login.gov, unseals the <code>site_key</code> JWE delivered at <code>/userinfo</code>, and encrypts/decrypts your chat history locally via WebCrypto.
+        </p>
       </div>
-    </div>
-  </section>
-  <section class="usa-graphic-list usa-section usa-section--dark">
-    <div class="grid-container">
-      <div class="usa-graphic-list__row grid-row grid-gap">
-        <div class="usa-media-block tablet:grid-col">
-          <div class="usa-media-block__body">
-            <h3 class="usa-graphic-list__heading">Create a plan for success</h3>
-            <p>We offer educational articles that outline key concepts and highlight services designed to fill the gaps in your planning.</p>
-          </div>
-        </div>
-        <div class="usa-media-block tablet:grid-col">
-          <div class="usa-media-block__body">
-            <h3 class="usa-graphic-list__heading">Evaluate your current and future needs</h3>
-            <p>On our website, you'll find valuable information for evaluating your current situation and progress toward your goals.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-  <section class="usa-section">
-    <div class="grid-container">
-      <h2 class="font-heading-xl margin-y-0">Come back often</h2>
-      <p class="usa-intro">We hope you take advantage of this resource and visit us often. Be sure to add our site to your list of "favorites" in your Internet browser. We frequently update our information, and we wouldn't want you to miss any developments.</p>
-      <a class="usa-button usa-button--big" href="#">New developments</a>
     </div>
   </section>
 </main>

@@ -8,7 +8,7 @@ module Oidc
       @configuration_service = configuration_service
     end
 
-    def build(client_id:, state:, nonce:, ial:, aal:, scopes:, prompt:, code_verifier: nil)
+    def build(client_id:, state:, nonce:, ial:, aal:, scopes:, prompt:, code_verifier: nil, dpop_jkt: nil)
       endpoint = @configuration_service.openid_configuration[:authorization_endpoint]
 
       request_params = {
@@ -20,7 +20,8 @@ module Oidc
         state: state,
         nonce: nonce,
         attempts_api_session_id: SecureRandom.uuid,
-        prompt: prompt
+        prompt: prompt,
+        dpop_jkt: dpop_jkt.presence
       }
 
       if code_verifier
@@ -34,7 +35,7 @@ module Oidc
     private
 
     def url_safe_code_challenge(code_verifier)
-      Base64.urlsafe_encode64(Digest::SHA256.digest(code_verifier))
+      Base64.urlsafe_encode64(Digest::SHA256.digest(code_verifier), padding: false)
     end
   end
 end

@@ -23,6 +23,7 @@ module Oidc
       x509_issuer
       x509_subject
       x509_presented
+      site_key
     ].freeze
 
     IAL2_OPTIONS = %w[
@@ -43,10 +44,13 @@ module Oidc
     ].freeze
 
     def self.default_scopes_by_ial
+      ial1_defaults = %w[openid email x509]
+      ial1_defaults << "site_key" if AppConfig.instance.pkce?
+
       defaults = {
-        nil => %w[openid email x509],
+        nil => ial1_defaults,
         "0" => %w[openid email social_security_number x509],
-        "1" => %w[openid email x509]
+        "1" => ial1_defaults
       }
 
       IAL2_OPTIONS.each { |ial| defaults[ial] = IAL2_DEFAULT_SCOPES }

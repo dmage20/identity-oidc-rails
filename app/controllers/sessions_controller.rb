@@ -2,11 +2,19 @@
 
 class SessionsController < ApplicationController
   def destroy
-    session.delete(:userinfo)
-    session.delete(:email)
-    session.delete(:step_up_enabled)
-    session.delete(:step_up_aal)
-    session.delete(:irs)
+    %i[
+      userinfo
+      email
+      user_sub
+      site_key_public
+      dpop_bound
+      dpop_jkt
+      dpop_access_token
+      pending_oidc_code
+      step_up_enabled
+      step_up_aal
+      irs
+    ].each { |key| session.delete(key) }
 
     logout_url = Oidc::LogoutUrlBuilder.new(
       config: app_config,

@@ -3,6 +3,8 @@ Rails.application.routes.draw do
 
   get "/auth/request", to: "auth#request_authorization"
   get "/auth/result", to: "auth#result"
+  post "/auth/dpop_token", to: "auth#dpop_token"
+  post "/auth/dpop_userinfo", to: "auth#dpop_userinfo"
 
   get "/failure_to_proof", to: "home#failure_to_proof"
 
@@ -14,6 +16,10 @@ Rails.application.routes.draw do
 
   namespace :api do
     get "health", to: "health#show"
+    get "conversations", to: "/conversations#index"
+    post "conversations", to: "/conversations#create"
+    post "conversations/server_sealed", to: "/conversations#create_server_sealed"
+    delete "conversations", to: "/conversations#destroy"
   end
 
   # Rails' built-in liveness check (in addition to /api/health parity endpoint)

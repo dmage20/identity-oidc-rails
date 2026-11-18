@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= content_for(:title) || "Identity" %></title>
+    <title><%= content_for(:title) || "America.gov — Login.gov Site Key Mock" %></title>
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
@@ -11,10 +11,12 @@
     <%# App-owned styles served with digests via Propshaft %>
     <%= stylesheet_link_tag "sign-in" %>
     <%= stylesheet_link_tag "fake" %>
+    <%= stylesheet_link_tag "america_gov" %>
   </head>
   <body>
     <%= yield %>
     <script src="/vendor/uswds/js/uswds.js"></script>
     <%= javascript_include_tag "scope-element" %>
+    <%= javascript_include_tag "america_gov_crypto" %>
   </body>
 </html>
