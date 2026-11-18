@@ -11,7 +11,7 @@ Rails.application.configure do
     policy.img_src     :self, :data
     policy.font_src    :self
     policy.connect_src :self
-    policy.form_action :self
+    policy.form_action :self, -> { AppConfig.instance.idp_url }
     policy.frame_ancestors :none
     policy.base_uri    :self
     policy.object_src  :none
